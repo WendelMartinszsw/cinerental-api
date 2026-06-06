@@ -11,7 +11,7 @@ let filmes = [];
 ========================= */
 async function carregarFilmes() {
   try {
-    const resposta = await fetch('http://localhost:3000/filmes');
+    const resposta = await fetch('https://cinerental-api.onrender.com/filmes');
     filmes = await resposta.json();
     renderizarFilmes();
   } catch (erro) {
@@ -56,8 +56,8 @@ function renderizarFilmes(lista = filmes) {
         </span>
       </td>
       <td>
-        <button onclick="editarFilme(${filme.id})">✏️</button>
-        <button onclick="excluirFilme(${filme.id})">🗑️</button>
+        <button onclick="editarFilme('${filme._id}')">✏️</button>
+        <button onclick="excluirFilme('${filme._id}')">🗑️</button>
       </td>
     </tr>
   `).join('');
@@ -68,7 +68,7 @@ function renderizarFilmes(lista = filmes) {
 ========================= */
 function salvarFilme() {
   const form = document.getElementById('filmeForm');
-  const id = parseInt(form.dataset.id);
+  const id = form.dataset.id;
 
   const titulo = document.getElementById('titulo').value.trim();
   const genero = document.getElementById('genero').value;
@@ -84,15 +84,15 @@ function salvarFilme() {
 
   const filme = { titulo, genero, diretor, ano, estoque, disponivel };
 
-  if (id === 0) {
-    fetch('http://localhost:3000/filmes', {
+ if (id === "0") {
+    fetch('https://cinerental-api.onrender.com/filmes', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(filme)
     }).then(() => carregarFilmes());
 
   } else {
-    fetch(`http://localhost:3000/filmes/${id}`, {
+    fetch(`https://cinerental-api.onrender.com/filmes/${id}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(filme)
@@ -106,7 +106,7 @@ function salvarFilme() {
    EDITAR
 ========================= */
 function editarFilme(id) {
-  const filme = filmes.find(f => f.id === id);
+  const filme = filmes.find(f => f._id === id);
   if (!filme) return;
 
   document.getElementById('titulo').value = filme.titulo;
@@ -124,12 +124,12 @@ function editarFilme(id) {
    EXCLUIR (DELETE)
 ========================= */
 function excluirFilme(id) {
-  const filme = filmes.find(f => f.id === id);
+  const filme = filmes.find(f => f._id === id);
   if (!filme) return;
 
   if (!confirm(`Deseja excluir "${filme.titulo}"?`)) return;
 
-  fetch(`http://localhost:3000/filmes/${id}`, {
+  fetch(`https://cinerental-api.onrender.com/filmes/${id}`, {
     method: 'DELETE'
   }).then(() => carregarFilmes());
 }
