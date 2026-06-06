@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CineRental — Locações</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <button class="menu-toggle" id="menuToggle" aria-label="Abrir menu">☰</button>
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <!-- ====================================================
+       BARRA LATERAL
+  ==================================================== -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-icon">🎬</div>
+      <div class="logo-title">CineRental</div>
+      <div class="logo-sub">Sistema de Locação</div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-label">Menu Principal</div>
+     <a href="index.html" class="nav-link">
+        <span class="nav-icon">📊</span> Dashboard
+      </a>
+      <a href="filmes.html" class="nav-link">
+        <span class="nav-icon">🎞️</span> Filmes
+      </a>
+      <a href="clientes.html" class="nav-link">
+        <span class="nav-icon">👥</span> Clientes
+      </a>
+      <!-- Ativo: Locações -->
+      <a href="locacoes.html" class="nav-link active">
+        <span class="nav-icon">📋</span> Locações
+      </a>
+    </nav>
+    <div class="sidebar-footer">
+      <strong>CineRental v1.0</strong><br />
+      Projeto Acadêmico — 2025<br />
+      Integração: MongoDB Atlas
+    </div>
+  </aside>
+
+  <!-- ====================================================
+       CONTEÚDO PRINCIPAL
+  ==================================================== -->
+  <main class="main-content">
+
+    <div class="page-header">
+      <div>
+        <h1 class="page-title">Locações</h1>
+        <p class="page-subtitle">Registro e controle de locações de filmes</p>
+      </div>
+      <button class="btn btn-secondary" onclick="limparFormulario()">
+        ✚ Nova Locação
+      </button>
+    </div>
+
+    <div class="page-body">
+
+      <!-- ====== CARDS RESUMO DE LOCAÇÕES ====== -->
+      <div class="stats-grid fade-up" style="margin-bottom: 24px;">
+
+        <div class="stat-card">
+          <div class="stat-icon">📋</div>
+          <div class="stat-value" id="totalGeral">0</div>
+          <div class="stat-label">Total de Locações</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon">✅</div>
+          <div class="stat-value" id="totalAtivo" style="color: var(--success);">0</div>
+          <div class="stat-label">Em Andamento</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon">⚠️</div>
+          <div class="stat-value" id="totalAtrasado" style="color: var(--danger);">0</div>
+          <div class="stat-label">Atrasadas</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon">↩️</div>
+          <div class="stat-value" id="totalDevolvido" style="color: var(--text-secondary);">0</div>
+          <div class="stat-label">Devolvidas</div>
+        </div>
+
+      </div>
+
+      <!-- ====== FORMULÁRIO DE LOCAÇÃO ====== -->
+      <div class="form-section fade-up">
+        <h2 class="section-title">
+          <span id="formTitulo">📝 Registrar Locação</span>
+        </h2>
+
+        <!--
+          Formulário de locação.
+          Relaciona clientes e filmes (como referências/ObjectId no MongoDB).
+          data-id guarda o ID em edição; 0 = novo registro.
+        -->
+        <div class="form-grid" id="locacaoForm" data-id="0">
+
+          <!-- Select de Cliente (populado dinamicamente por JS) -->
+          <div class="form-group">
+            <label for="clienteSelect">Cliente</label>
+            <select id="clienteSelect">
+              <option value="">Selecione um cliente...</option>
+              <!-- Opções geradas pelo locacoes.js -->
+            </select>
+          </div>
+
+          <!-- Select de Filme (populado dinamicamente por JS) -->
+          <div class="form-group">
+            <label for="filmeSelect">Filme</label>
+            <select id="filmeSelect">
+              <option value="">Selecione um filme...</option>
+              <!-- Opções geradas pelo locacoes.js -->
+            </select>
+          </div>
+
+          <!-- Data da locação -->
+          <div class="form-group">
+            <label for="dataLocacao">Data da Locação</label>
+            <input type="date" id="dataLocacao" />
+          </div>
+
+          <!-- Data prevista de devolução -->
+          <div class="form-group">
+            <label for="dataDevolucao">Data de Devolução</label>
+            <input type="date" id="dataDevolucao" />
+          </div>
+
+          <!-- Status da locação -->
+          <div class="form-group">
+            <label for="statusLocacao">Status</label>
+            <select id="statusLocacao">
+              <option value="Ativo">✅ Ativo (em andamento)</option>
+              <option value="Atrasado">⚠️ Atrasado</option>
+              <option value="Devolvido">↩️ Devolvido</option>
+            </select>
+          </div>
+
+        </div><!-- /form-grid -->
+
+        <div class="form-actions">
+          <button class="btn btn-primary" onclick="salvarLocacao()">
+            💾 Salvar Locação
+          </button>
+          <button class="btn btn-secondary" onclick="limparFormulario()">
+            ✕ Cancelar
+          </button>
+        </div>
+
+      </div><!-- /form-section -->
+
+      <!-- ====== TABELA DE LOCAÇÕES ====== -->
+      <div class="table-section fade-up">
+
+        <div class="table-header">
+          <div class="table-title">
+            📋 Registro de Locações
+            <span class="badge" id="contadorLocacoes">0</span>
+          </div>
+          <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+
+            <!-- Filtro rápido por status -->
+            <select
+              id="filtroStatus"
+              onchange="filtrarPorStatus(this.value)"
+              style="
+                background: var(--bg-elevated);
+                border: 1px solid var(--border);
+                border-radius: var(--radius-sm);
+                color: var(--text-secondary);
+                font-family: 'DM Sans', sans-serif;
+                font-size: .82rem;
+                padding: 7px 12px;
+                outline: none;
+              "
+            >
+              <option value="">Todos os status</option>
+              <option value="Ativo">✅ Ativo</option>
+              <option value="Atrasado">⚠️ Atrasado</option>
+              <option value="Devolvido">↩️ Devolvido</option>
+            </select>
+
+            <!-- Busca textual -->
+            <div class="table-search">
+              <span class="table-search-icon">🔍</span>
+              <input
+                type="text"
+                id="buscaLocacao"
+                placeholder="Buscar..."
+                oninput="filtrarLocacoes(this.value)"
+              />
+            </div>
+          </div>
+        </div>
+
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Cliente</th>
+                <th>Filme</th>
+                <th>Data Locação</th>
+                <th>Data Devolução</th>
+                <th>Status</th>
+                <th>Ações</th>
+              </tr>
+            </thead>
+            <tbody id="tabelaLocacoes"></tbody>
+          </table>
+        </div>
+
+      </div><!-- /table-section -->
+
+    </div><!-- /page-body -->
+  </main>
+
+  <script src="dados.js"></script>
+  <script src="locacoes.js"></script>
+  <script src="nav.js"></script>
+
+</body>
+</html>

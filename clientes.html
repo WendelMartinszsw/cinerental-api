@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CineRental — Clientes</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <button class="menu-toggle" id="menuToggle" aria-label="Abrir menu">☰</button>
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <!-- ====================================================
+       BARRA LATERAL
+  ==================================================== -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-icon">🎬</div>
+      <div class="logo-title">CineRental</div>
+      <div class="logo-sub">Sistema de Locação</div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-label">Menu Principal</div>
+      <a href="index.html" class="nav-link">
+        <span class="nav-icon">📊</span> Dashboard
+      </a>
+      <a href="filmes.html" class="nav-link">
+        <span class="nav-icon">🎞️</span> Filmes
+      </a>
+      <!-- Ativo: Clientes -->
+      <a href="clientes.html" class="nav-link active">
+        <span class="nav-icon">👥</span> Clientes
+      </a>
+      <a href="locacoes.html" class="nav-link">
+        <span class="nav-icon">📋</span> Locações
+      </a>
+    </nav>
+    <div class="sidebar-footer">
+      <strong>CineRental v1.0</strong><br />
+      Projeto Acadêmico — 2025<br />
+      Integração: MongoDB Atlas
+    </div>
+  </aside>
+
+  <!-- ====================================================
+       CONTEÚDO PRINCIPAL
+  ==================================================== -->
+  <main class="main-content">
+
+    <div class="page-header">
+      <div>
+        <h1 class="page-title">Clientes</h1>
+        <p class="page-subtitle">Cadastro e gerenciamento de clientes</p>
+      </div>
+      <button class="btn btn-secondary" onclick="limparFormulario()">
+        ✚ Novo Cliente
+      </button>
+    </div>
+
+    <div class="page-body">
+
+      <!-- ====== FORMULÁRIO DE CADASTRO/EDIÇÃO ====== -->
+      <div class="form-section fade-up">
+        <h2 class="section-title">
+          <span id="formTitulo">📝 Cadastrar Cliente</span>
+        </h2>
+
+        <!--
+          Formulário de cliente.
+          Campos mapeados para o schema da coleção "clientes" no MongoDB.
+        -->
+        <div class="form-grid" id="clienteForm" data-id="0">
+
+          <!-- Nome completo -->
+          <div class="form-group span-2">
+            <label for="nome">Nome Completo</label>
+            <input type="text" id="nome" placeholder="Ex: Ana Beatriz Silva" />
+          </div>
+
+          <!-- E-mail -->
+          <div class="form-group">
+            <label for="email">E-mail</label>
+            <input type="email" id="email" placeholder="Ex: ana@email.com" />
+          </div>
+
+          <!-- Telefone com máscara visual -->
+          <div class="form-group">
+            <label for="telefone">Telefone</label>
+            <input
+              type="tel"
+              id="telefone"
+              placeholder="Ex: (11) 99456-7890"
+              maxlength="15"
+              oninput="mascaraTelefone(this)"
+            />
+          </div>
+
+        </div><!-- /form-grid -->
+
+        <div class="form-actions">
+          <button class="btn btn-primary" onclick="salvarCliente()">
+            💾 Salvar Cliente
+          </button>
+          <button class="btn btn-secondary" onclick="limparFormulario()">
+            ✕ Cancelar
+          </button>
+        </div>
+
+      </div><!-- /form-section -->
+
+      <!-- ====== TABELA DE LISTAGEM DE CLIENTES ====== -->
+      <div class="table-section fade-up">
+
+        <div class="table-header">
+          <div class="table-title">
+            👥 Lista de Clientes
+            <span class="badge" id="contadorClientes">0</span>
+          </div>
+          <div class="table-search">
+            <span class="table-search-icon">🔍</span>
+            <input
+              type="text"
+              id="buscaCliente"
+              placeholder="Buscar cliente..."
+              oninput="filtrarClientes(this.value)"
+            />
+          </div>
+        </div>
+
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Nome</th>
+                <th>E-mail</th>
+                <th>Telefone</th>
+                <th>Ações</th>
+              </tr>
+            </thead>
+            <tbody id="tabelaClientes"></tbody>
+          </table>
+        </div>
+
+      </div><!-- /table-section -->
+
+    </div><!-- /page-body -->
+  </main>
+
+  <script src="dados.js"></script>
+  <script src="clientes.js"></script>
+  <script src="nav.js"></script>
+
+</body>
+</html>

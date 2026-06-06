@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CineRental — Dashboard</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- ====================================================
+       BOTÃO HAMBÚRGUER (visível apenas em mobile)
+  ==================================================== -->
+  <button class="menu-toggle" id="menuToggle" aria-label="Abrir menu">☰</button>
+
+  <!-- Overlay escuro para fechar o menu no mobile -->
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <!-- ====================================================
+       BARRA LATERAL — NAVEGAÇÃO PRINCIPAL
+  ==================================================== -->
+  <aside class="sidebar" id="sidebar">
+
+    <!-- Logotipo da locadora -->
+    <div class="sidebar-logo">
+      <div class="logo-icon">🎬</div>
+      <div class="logo-title">CineRental</div>
+      <div class="logo-sub">Sistema de Locação</div>
+    </div>
+
+    <!-- Links de navegação -->
+    <nav class="sidebar-nav">
+      <div class="nav-label">Menu Principal</div>
+
+      <!-- Link ativo: Dashboard -->
+     <a href="index.html" class="nav-link active">
+        <span class="nav-icon">📊</span>
+        Dashboard
+      </a>
+
+      <a href="filmes.html" class="nav-link">
+        <span class="nav-icon">🎞️</span>
+        Filmes
+      </a>
+
+      <a href="clientes.html" class="nav-link">
+        <span class="nav-icon">👥</span>
+        Clientes
+      </a>
+
+      <a href="locacoes.html" class="nav-link">
+        <span class="nav-icon">📋</span>
+        Locações
+      </a>
+    </nav>
+
+    <!-- Rodapé da sidebar com info do sistema -->
+    <div class="sidebar-footer">
+      <strong>CineRental v1.0</strong><br />
+      Projeto Acadêmico — 2025<br />
+      Integração: MongoDB Atlas
+    </div>
+  </aside>
+
+  <!-- ====================================================
+       ÁREA PRINCIPAL DE CONTEÚDO
+  ==================================================== -->
+  <main class="main-content">
+
+    <!-- Cabeçalho da página -->
+    <div class="page-header">
+      <div>
+        <h1 class="page-title">Dashboard</h1>
+        <p class="page-subtitle">Visão geral do sistema de locação</p>
+      </div>
+      <div>
+        <!-- Data atual exibida dinamicamente via JS -->
+        <span id="currentDate" style="font-size:.85rem; color: var(--text-muted);"></span>
+      </div>
+    </div>
+
+    <!-- Corpo da página -->
+    <div class="page-body">
+
+      <!-- Banner de boas-vindas -->
+      <div class="welcome-banner fade-up">
+        <div class="welcome-title">Bem-vindo ao CineRental! 🎥</div>
+        <p class="welcome-text">
+          Sistema completo de gerenciamento de locadora de filmes.
+          Gerencie seu catálogo, clientes e locações em um só lugar,
+          com integração pronta para o MongoDB Atlas.
+        </p>
+      </div>
+
+      <!-- ====== CARDS DE ESTATÍSTICAS ====== -->
+      <div class="stats-grid">
+
+        <!-- Card: Total de Filmes -->
+        <div class="stat-card fade-up">
+          <div class="stat-icon">🎞️</div>
+          <div class="stat-value" id="totalFilmes">0</div>
+          <div class="stat-label">Filmes Cadastrados</div>
+          <div class="stat-delta">↑ catálogo atualizado</div>
+        </div>
+
+        <!-- Card: Total de Clientes -->
+        <div class="stat-card fade-up">
+          <div class="stat-icon">👥</div>
+          <div class="stat-value" id="totalClientes">0</div>
+          <div class="stat-label">Clientes Ativos</div>
+          <div class="stat-delta">↑ cadastros ativos</div>
+        </div>
+
+        <!-- Card: Total de Locações -->
+        <div class="stat-card fade-up">
+          <div class="stat-icon">📋</div>
+          <div class="stat-value" id="totalLocacoes">0</div>
+          <div class="stat-label">Locações Totais</div>
+          <div class="stat-delta">↑ todas as locações</div>
+        </div>
+
+        <!-- Card: Locações em Aberto -->
+        <div class="stat-card fade-up">
+          <div class="stat-icon">⏳</div>
+          <div class="stat-value" id="locacoesAtivas">0</div>
+          <div class="stat-label">Locações em Aberto</div>
+          <div class="stat-delta">📅 verificar devoluções</div>
+        </div>
+
+      </div><!-- /stats-grid -->
+
+      <!-- ====== ATIVIDADES RECENTES ====== -->
+      <div class="activity-grid fade-up">
+
+        <!-- Filmes recentes -->
+        <div class="activity-card">
+          <div class="activity-card-header">
+            🎞️ Filmes Recentes
+          </div>
+          <ul class="activity-list" id="filmesRecentes">
+            <!-- Preenchido pelo JavaScript (dados fictícios) -->
+          </ul>
+        </div>
+
+        <!-- Locações recentes -->
+        <div class="activity-card">
+          <div class="activity-card-header">
+            📋 Últimas Locações
+          </div>
+          <ul class="activity-list" id="locacoesRecentes">
+            <!-- Preenchido pelo JavaScript (dados fictícios) -->
+          </ul>
+        </div>
+
+      </div><!-- /activity-grid -->
+
+    </div><!-- /page-body -->
+  </main><!-- /main-content -->
+
+  <!-- Script de dados compartilhados (deve vir primeiro) -->
+  <script src="dados.js"></script>
+  <!-- Script específico do dashboard -->
+  <script src="dashboard.js"></script>
+  <!-- Script de navegação mobile -->
+  <script src="nav.js"></script>
+
+</body>
+</html>

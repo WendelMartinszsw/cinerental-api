@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CineRental — Filmes</title>
+  <!-- CSS compartilhado (caminho relativo a partir de /pages/) -->
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- Botão hambúrguer mobile -->
+  <button class="menu-toggle" id="menuToggle" aria-label="Abrir menu">☰</button>
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <!-- ====================================================
+       BARRA LATERAL
+  ==================================================== -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-icon">🎬</div>
+      <div class="logo-title">CineRental</div>
+      <div class="logo-sub">Sistema de Locação</div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-label">Menu Principal</div>
+      <a href="index.html" class="nav-link">
+        <span class="nav-icon">📊</span> Dashboard
+      </a>
+      <!-- Ativo: Filmes -->
+      <a href="filmes.html" class="nav-link active">
+        <span class="nav-icon">🎞️</span> Filmes
+      </a>
+      <a href="clientes.html" class="nav-link">
+        <span class="nav-icon">👥</span> Clientes
+      </a>
+      <a href="locacoes.html" class="nav-link">
+        <span class="nav-icon">📋</span> Locações
+      </a>
+    </nav>
+    <div class="sidebar-footer">
+      <strong>CineRental v1.0</strong><br />
+      Projeto Acadêmico — 2025<br />
+      Integração: MongoDB Atlas
+    </div>
+  </aside>
+
+  <!-- ====================================================
+       CONTEÚDO PRINCIPAL
+  ==================================================== -->
+  <main class="main-content">
+
+    <div class="page-header">
+      <div>
+        <h1 class="page-title">Filmes</h1>
+        <p class="page-subtitle">Gerencie o catálogo completo de filmes</p>
+      </div>
+      <!-- Botão para limpar o formulário / adicionar novo -->
+      <button class="btn btn-secondary" id="btnNovo" onclick="limparFormulario()">
+        ✚ Novo Filme
+      </button>
+    </div>
+
+    <div class="page-body">
+
+      <!-- ====== FORMULÁRIO DE CADASTRO/EDIÇÃO ====== -->
+      <div class="form-section fade-up">
+        <h2 class="section-title">
+          <span id="formTitulo">📝 Cadastrar Filme</span>
+        </h2>
+
+        <!--
+          Formulário principal.
+          Campos mapeados diretamente para os campos do MongoDB.
+          O atributo data-id guarda o ID do registro em edição (0 = novo).
+        -->
+        <div class="form-grid" id="filmeForm" data-id="0">
+
+          <!-- Título do filme -->
+          <div class="form-group span-2">
+            <label for="titulo">Título do Filme</label>
+            <input type="text" id="titulo" placeholder="Ex: Oppenheimer" />
+          </div>
+
+          <!-- Gênero -->
+          <div class="form-group">
+            <label for="genero">Gênero</label>
+            <select id="genero">
+              <option value="">Selecione...</option>
+              <option>Ação/Aventura</option>
+              <option>Animação</option>
+              <option>Comédia</option>
+              <option>Comédia/Drama</option>
+              <option>Drama</option>
+              <option>Drama/Histórico</option>
+              <option>Drama/Guerra</option>
+              <option>Ficção Científica</option>
+              <option>Terror/Ficção Científica</option>
+              <option>Romance</option>
+              <option>Suspense</option>
+              <option>Terror</option>
+              <option>Documentário</option>
+            </select>
+          </div>
+
+          <!-- Diretor -->
+          <div class="form-group">
+            <label for="diretor">Diretor</label>
+            <input type="text" id="diretor" placeholder="Ex: Christopher Nolan" />
+          </div>
+
+          <!-- Ano de lançamento -->
+          <div class="form-group">
+            <label for="ano">Ano de Lançamento</label>
+            <input type="number" id="ano" placeholder="Ex: 2024" min="1900" max="2099" />
+          </div>
+
+          <!-- Quantidade em estoque -->
+          <div class="form-group">
+            <label for="estoque">Qtd. em Estoque</label>
+            <input type="number" id="estoque" placeholder="Ex: 5" min="0" />
+          </div>
+
+          <!-- Disponibilidade -->
+          <div class="form-group">
+            <label for="disponivel">Disponível para Locação</label>
+            <select id="disponivel">
+              <option value="true">✅ Sim</option>
+              <option value="false">❌ Não</option>
+            </select>
+          </div>
+
+        </div><!-- /form-grid -->
+
+        <!-- Botões de ação do formulário -->
+        <div class="form-actions">
+          <button class="btn btn-primary" onclick="salvarFilme()">
+            💾 Salvar Filme
+          </button>
+          <button class="btn btn-secondary" onclick="limparFormulario()">
+            ✕ Cancelar
+          </button>
+        </div>
+
+      </div><!-- /form-section -->
+
+      <!-- ====== TABELA DE LISTAGEM DE FILMES ====== -->
+      <div class="table-section fade-up">
+
+        <!-- Cabeçalho da tabela com busca -->
+        <div class="table-header">
+          <div class="table-title">
+            🎞️ Catálogo de Filmes
+            <span class="badge" id="contadorFilmes">0</span>
+          </div>
+          <div class="table-search">
+            <span class="table-search-icon">🔍</span>
+            <input
+              type="text"
+              id="buscaFilme"
+              placeholder="Buscar filme..."
+              oninput="filtrarFilmes(this.value)"
+            />
+          </div>
+        </div>
+
+        <!-- Wrapper com scroll para responsividade -->
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Título</th>
+                <th>Gênero</th>
+                <th>Diretor</th>
+                <th>Ano</th>
+                <th>Estoque</th>
+                <th>Status</th>
+                <th>Ações</th>
+              </tr>
+            </thead>
+            <!-- Corpo preenchido pelo JavaScript -->
+            <tbody id="tabelaFilmes"></tbody>
+          </table>
+        </div>
+
+      </div><!-- /table-section -->
+
+    </div><!-- /page-body -->
+  </main>
+
+  <!-- Scripts: dados.js primeiro (dependência), depois filmes.js e nav.js -->
+  <script src="dados.js"></script>
+  <script src="filmes.js"></script>
+  <script src="nav.js"></script>
+
+</body>
+</html>
