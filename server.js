@@ -9,9 +9,11 @@ app.use(express.json());
 app.use(cors());
 
 mongoose.connect(process.env.MONGODB_URI)
-  .then(() => console.log('MongoDB conectado!'))
+  .then(() => {
+    console.log('MongoDB conectado!');
+    console.log('URI usada:', process.env.MONGODB_URI);
+  })
   .catch(err => console.error('Erro MongoDB:', err));
-
 const filmeSchema = new mongoose.Schema({
   titulo: String,
   genero: String,
@@ -41,11 +43,20 @@ const Locacao = mongoose.model('Locacao', locacaoSchema);
 
 // FILMES
 app.get('/filmes', async (req, res) => {
-  res.json(await Filme.find());
+  console.log('GET /filmes lendo do banco:', mongoose.connection.db.databaseName);
+  const filmes = await Filme.find();
+  console.log('Quantidade no banco:', filmes.length);
+  res.json(filmes);
 });
 
 app.post('/filmes', async (req, res) => {
+  console.log('POST /filmes recebeu:', req.body);
+  console.log('Salvando no banco:', mongoose.connection.db.databaseName);
+
   const filme = await Filme.create(req.body);
+
+  console.log('Filme salvo com ID:', filme._id);
+
   res.json({ mensagem: 'Filme cadastrado', filme });
 });
 
@@ -114,55 +125,250 @@ const swaggerDocument = {
   info: {
     title: 'API CineRental',
     version: '1.0.0',
-    description: 'CRUD de Filmes, Clientes e Locacoes'
+    description: 'CRUD de Filmes, Clientes e Locações'
   },
   paths: {
     '/filmes': {
       get: {
-        summary: 'Listar filmes'
+        summary: 'Listar filmes',
+        responses: {
+          200: { description: 'Lista de filmes' }
+        }
       },
       post: {
-        summary: 'Cadastrar filme'
+        summary: 'Cadastrar filme',
+        requestBody: {
+          required: true,
+          content: {
+            'application/json': {
+              schema: {
+                type: 'object',
+                properties: {
+                  titulo: { type: 'string', example: 'TESTE FILME' },
+                  genero: { type: 'string', example: 'Ação' },
+                  diretor: { type: 'string', example: 'Wendel' },
+                  ano: { type: 'number', example: 2026 },
+                  estoque: { type: 'number', example: 10 },
+                  disponivel: { type: 'boolean', example: true }
+                }
+              }
+            }
+          }
+        },
+        responses: {
+          200: { description: 'Filme cadastrado' }
+        }
       }
     },
+
     '/filmes/{id}': {
       put: {
-        summary: 'Atualizar filme'
+        summary: 'Atualizar filme',
+        parameters: [
+          {
+            name: 'id',
+            in: 'path',
+            required: true,
+            schema: { type: 'string' },
+            example: 'COLE_O_ID_DO_FILME_AQUI'
+          }
+        ],
+        requestBody: {
+          required: true,
+          content: {
+            'application/json': {
+              schema: {
+                type: 'object',
+                properties: {
+                  titulo: { type: 'string', example: 'Filme Atualizado' },
+                  genero: { type: 'string', example: 'Drama' },
+                  diretor: { type: 'string', example: 'Diretor Atualizado' },
+                  ano: { type: 'number', example: 2026 },
+                  estoque: { type: 'number', example: 5 },
+                  disponivel: { type: 'boolean', example: true }
+                }
+              }
+            }
+          }
+        },
+        responses: {
+          200: { description: 'Filme atualizado' }
+        }
       },
       delete: {
-        summary: 'Excluir filme'
+        summary: 'Excluir filme',
+        parameters: [
+          {
+            name: 'id',
+            in: 'path',
+            required: true,
+            schema: { type: 'string' },
+            example: 'COLE_O_ID_DO_FILME_AQUI'
+          }
+        ],
+        responses: {
+          200: { description: 'Filme excluído' }
+        }
       }
     },
+
     '/clientes': {
       get: {
-        summary: 'Listar clientes'
+        summary: 'Listar clientes',
+        responses: {
+          200: { description: 'Lista de clientes' }
+        }
       },
       post: {
-        summary: 'Cadastrar cliente'
+        summary: 'Cadastrar cliente',
+        requestBody: {
+          required: true,
+          content: {
+            'application/json': {
+              schema: {
+                type: 'object',
+                properties: {
+                  nome: { type: 'string', example: 'Cliente Teste' },
+                  email: { type: 'string', example: 'cliente@teste.com' },
+                  telefone: { type: 'string', example: '(73) 99999-9999' }
+                }
+              }
+            }
+          }
+        },
+        responses: {
+          200: { description: 'Cliente cadastrado' }
+        }
       }
     },
+
     '/clientes/{id}': {
       put: {
-        summary: 'Atualizar cliente'
+        summary: 'Atualizar cliente',
+        parameters: [
+          {
+            name: 'id',
+            in: 'path',
+            required: true,
+            schema: { type: 'string' },
+            example: 'COLE_O_ID_DO_CLIENTE_AQUI'
+          }
+        ],
+        requestBody: {
+          required: true,
+          content: {
+            'application/json': {
+              schema: {
+                type: 'object',
+                properties: {
+                  nome: { type: 'string', example: 'Cliente Atualizado' },
+                  email: { type: 'string', example: 'atualizado@teste.com' },
+                  telefone: { type: 'string', example: '(73) 98888-8888' }
+                }
+              }
+            }
+          }
+        },
+        responses: {
+          200: { description: 'Cliente atualizado' }
+        }
       },
       delete: {
-        summary: 'Excluir cliente'
+        summary: 'Excluir cliente',
+        parameters: [
+          {
+            name: 'id',
+            in: 'path',
+            required: true,
+            schema: { type: 'string' },
+            example: 'COLE_O_ID_DO_CLIENTE_AQUI'
+          }
+        ],
+        responses: {
+          200: { description: 'Cliente excluído' }
+        }
       }
     },
+
     '/locacoes': {
       get: {
-        summary: 'Listar locações'
+        summary: 'Listar locações',
+        responses: {
+          200: { description: 'Lista de locações' }
+        }
       },
       post: {
-        summary: 'Cadastrar locação'
+        summary: 'Cadastrar locação',
+        requestBody: {
+          required: true,
+          content: {
+            'application/json': {
+              schema: {
+                type: 'object',
+                properties: {
+                  clienteNome: { type: 'string', example: 'Cliente Teste' },
+                  filmeNome: { type: 'string', example: 'TESTE FILME' },
+                  dataLocacao: { type: 'string', example: '2026-06-06' },
+                  dataDevolucao: { type: 'string', example: '2026-06-10' },
+                  status: { type: 'string', example: 'Ativo' }
+                }
+              }
+            }
+          }
+        },
+        responses: {
+          200: { description: 'Locação cadastrada' }
+        }
       }
     },
+
     '/locacoes/{id}': {
       put: {
-        summary: 'Atualizar locação'
+        summary: 'Atualizar locação',
+        parameters: [
+          {
+            name: 'id',
+            in: 'path',
+            required: true,
+            schema: { type: 'string' },
+            example: 'COLE_O_ID_DA_LOCACAO_AQUI'
+          }
+        ],
+        requestBody: {
+          required: true,
+          content: {
+            'application/json': {
+              schema: {
+                type: 'object',
+                properties: {
+                  clienteNome: { type: 'string', example: 'Cliente Atualizado' },
+                  filmeNome: { type: 'string', example: 'Filme Atualizado' },
+                  dataLocacao: { type: 'string', example: '2026-06-06' },
+                  dataDevolucao: { type: 'string', example: '2026-06-12' },
+                  status: { type: 'string', example: 'Devolvido' }
+                }
+              }
+            }
+          }
+        },
+        responses: {
+          200: { description: 'Locação atualizada' }
+        }
       },
       delete: {
-        summary: 'Excluir locação'
+        summary: 'Excluir locação',
+        parameters: [
+          {
+            name: 'id',
+            in: 'path',
+            required: true,
+            schema: { type: 'string' },
+            example: 'COLE_O_ID_DA_LOCACAO_AQUI'
+          }
+        ],
+        responses: {
+          200: { description: 'Locação excluída' }
+        }
       }
     }
   }
